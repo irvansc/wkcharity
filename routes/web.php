@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\{
     DashboardController,
-    CategoryController
+    CategoryController,
+    CampaignController
 };
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,20 @@ Route::group([
         'middleware' => 'role:admin'
     ], function () {
         Route::resource('/category', CategoryController::class);
+        Route::get('/campaign/data', [CampaignController::class, 'data'])
+        ->name('campaign.data');
+        
+        Route::get('/campaign/detail/{id}', [CampaignController::class, 'detail'])
+        ->name('campaign.detail');
+
+        Route::resource('/campaign', CampaignController::class);
+        Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])
+        ->name('campaign.update_status');
+
+    Route::get('/campaign/{id}/cashout', [CampaignController::class, 'cashout'])
+        ->name('campaign.cashout');
+    Route::post('/campaign/{id}/cashout', [CampaignController::class, 'cashoutStore'])
+        ->name('campaign.cashout.store');
     });
 
 });

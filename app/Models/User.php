@@ -64,4 +64,10 @@ class User extends Authenticatable
     {
         return $this->role->name == $role;
     }
+
+    public function campaigns()
+    {
+        return $this->hasMany(Campaign::class, 'user_id', 'id');
+    }
+
 }
