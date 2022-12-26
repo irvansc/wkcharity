@@ -3,7 +3,9 @@
 use App\Http\Controllers\{
     DashboardController,
     CategoryController,
-    CampaignController
+    CampaignController,
+    SettingController,
+    UserProfileInformationController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -22,14 +24,37 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/contact', function () {
+    return view('contact');
+});
+
+Route::get('/about', function () {
+    return view('about');
+});
+
+Route::get('/donation', function () {
+    return view('donation.index');
+});
+
+Route::get('/donation/1', function () {
+    return view('donation.show');
+});
+Route::get('/donation/1/create', function () {
+    return view('donation.create');
+});
+
 Route::group([
     'middleware' => ['auth', 'role:admin,donatur']
 ], function () {
-    Route::get('/', function () {
-        return redirect()->route('dashboard');
-    });
+    // Route::get('/', function () {
+    //     return redirect()->route('dashboard');
+    // });
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+    Route::get('/user/profile', [UserProfileInformationController::class, 'show'])
+        ->name('profile.show');
+    Route::delete('/user/bank/{id}', [UserProfileInformationController::class, 'bankDestroy'])
+    ->name('profile.bank.destroy');
 
     Route::group([
         'middleware' => 'role:admin'
@@ -45,10 +70,20 @@ Route::group([
         Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])
         ->name('campaign.update_status');
 
-    Route::get('/campaign/{id}/cashout', [CampaignController::class, 'cashout'])
-        ->name('campaign.cashout');
-    Route::post('/campaign/{id}/cashout', [CampaignController::class, 'cashoutStore'])
-        ->name('campaign.cashout.store');
+        Route::get('/setting', [SettingController::class, 'index'])
+        ->name('setting');
+        
+        Route::put('/setting/{setting}', [SettingController::class, 'update'])
+        ->name('setting.update');
+        
+        Route::delete('/setting/{setting}/bank/{id}', [SettingController::class, 'bankDestroy'])
+        ->name('setting.bank.destroy');
+   
+    });
+    Route::group([
+        'middleware' => 'role:donatur'
+    ], function () {
+
     });
 
 });

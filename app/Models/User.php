@@ -69,5 +69,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Campaign::class, 'user_id', 'id');
     }
-
+    public function bank_user()
+    {
+        return $this->belongsToMany(Bank::class, 'bank_user', 'user_id')
+            ->withPivot('account', 'name')
+            ->withTimestamps();
+    }
 }
