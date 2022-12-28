@@ -4,7 +4,12 @@ use App\Http\Controllers\{
     DashboardController,
     CategoryController,
     CampaignController,
+    ContactController,
+    DonationController,
+    DonaturController,
+    ReportController,
     SettingController,
+    SubscriberController,
     UserProfileInformationController,
 };
 use App\Http\Controllers\Front\{
@@ -13,7 +18,7 @@ use App\Http\Controllers\Front\{
     DonationController as FrontDonationController,
     FrontController,
     SubscriberController as FrontSubscriberController,
-    PaymentController,
+    PaymentController as FrontPaymentController,
     CampaignController as FrontCampaignController,
 };
 
@@ -36,9 +41,9 @@ Route::group([
     Route::get('/', [FrontDonationController::class, 'show']);
     Route::get('/create', [FrontDonationController::class, 'create']);
     Route::post('/', [FrontDonationController::class, 'store']);
-    Route::get('/payment/{order_number}', [PaymentController::class, 'index']);
-    Route::get('/payment-confirmation/{order_number}', [PaymentController::class, 'paymentConfirmation']);
-    Route::post('/payment-confirmation/{order_number}', [PaymentController::class, 'store']);
+    Route::get('/payment/{order_number}', [FrontPaymentController::class, 'index']);
+    Route::get('/payment-confirmation/{order_number}', [FrontPaymentController::class, 'paymentConfirmation']);
+    Route::post('/payment-confirmation/{order_number}', [FrontPaymentController::class, 'store']);
 });
 
 
@@ -65,7 +70,7 @@ Route::group([
         ->name('campaign.update_status');
 
         Route::get('/setting', [SettingController::class, 'index'])
-        ->name('setting');
+        ->name('setting.index');
         
         Route::put('/setting/{setting}', [SettingController::class, 'update'])
         ->name('setting.update');
@@ -80,4 +85,25 @@ Route::group([
     Route::resource('/campaign', CampaignController::class);
     Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])
     ->name('campaign.update_status');
+
+    Route::get('/donation/data', [DonationController::class, 'data'])->name('donation.data');
+    Route::resource('/donation', DonationController::class);
+    
+    Route::get('/contact/data', [ContactController::class, 'data'])->name('contact.data');
+    Route::resource('/contact', ContactController::class)->only('index', 'destroy');
+
+    Route::group([
+        'middleware' => 'role:admin'
+    ], function () {
+
+    Route::get('/donatur/data', [DonaturController::class, 'data'])->name('donatur.data');
+    Route::resource('/donatur', DonaturController::class);
+
+    Route::get('/subscriber/data', [SubscriberController::class, 'data'])->name('subscriber.data');
+    Route::resource('/subscriber', SubscriberController::class)->only('index', 'destroy');
+
+    Route::get('/report/data', [ReportController::class, 'data'])->name('report.data');
+    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    
+    });
 });

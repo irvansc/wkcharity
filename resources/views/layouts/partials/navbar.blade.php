@@ -33,16 +33,19 @@
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-bell"></i>
-                <span class="badge badge-danger navbar-badge"></span>
+                <span class="badge badge-danger navbar-badge">15</span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-hidden">
-                <span class="dropdown-item dropdown-header">Notifikasi</span>
+                <span class="dropdown-item dropdown-header">15 Notifikasi</span>
                 <div class="dropdown-divider"></div>
-                <a href="" class="dropdown-item">
-                    <i class="fas 
-                    
-                    mr-2"></i>baru
-                    <span class="text-muted text-sm d-block"></span>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-envelope mr-2"></i> 4 pesan baru
+                    <span class="float-right text-muted text-sm">3 mins</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                    <i class="fas fa-users mr-2"></i> 8 user baru
+                    <span class="float-right text-muted text-sm">12 hours</span>
                 </a>
             </div>
         </li>

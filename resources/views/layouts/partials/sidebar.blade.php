@@ -58,24 +58,24 @@
                   </a>
               </li>
               <li class="nav-header">REFERENSI</li>
-              @if (auth()->user()->hasRole('admin'))
-              <li class="nav-item">
-                  <a href="" class="nav-link">
-                      <i class="nav-icon fas fa-user-plus"></i>
-                      <p>
-                          Donatur
-                      </p>
-                  </a>
-              </li>
-              @endif
-              <li class="nav-item">
-                  <a href="" class="nav-link">
-                      <i class="nav-icon fas fa-donate"></i>
-                      <p>
-                          Daftar Donasi
-                      </p>
-                  </a>
-              </li>
+                @if (auth()->user()->hasRole('admin'))
+                <li class="nav-item">
+                    <a href="{{ route('donatur.index') }}" class="nav-link {{ request()->is('admin/donatur*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-plus"></i>
+                        <p>
+                            Donatur
+                        </p>
+                    </a>
+                </li>
+                @endif
+                <li class="nav-item">
+                    <a href="{{ route('donation.index') }}" class="nav-link {{ request()->is('admin/donation*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-donate"></i>
+                        <p>
+                            Daftar Donasi
+                        </p>
+                    </a>
+                </li>
               <li class="nav-item">
                   <a href="" class="nav-link">
                       <i class="nav-icon fas fa-hand-holding-usd"></i>
@@ -88,7 +88,7 @@
 
               @if (auth()->user()->hasRole('admin'))
               <li class="nav-item">
-                  <a href="" class="nav-link">
+                  <a href="{{ route('contact.index') }}" class="nav-link {{ request()->is('admin/contact*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-envelope"></i>
                       <p>
                           Kontak Masuk
@@ -96,7 +96,7 @@
                   </a>
               </li>
               <li class="nav-item">
-                  <a href="" class="nav-link">
+                  <a href="{{ route('subscriber.index') }}" class="nav-link {{ request()->is('admin/subscriber*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-user-plus"></i>
                       <p>
                           Subscriber
@@ -104,8 +104,8 @@
                   </a>
               </li>
               <li class="nav-header">REPORT</li>
-              <li class="nav-item" >
-                  <a href="" class="nav-link">
+              <li class="nav-item">
+                  <a href="{{ route('report.index') }}" class="nav-link {{ request()->is('admin/report*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-file-pdf"></i>
                       <p>
                           Laporan
@@ -117,7 +117,7 @@
               @if (auth()->user()->hasRole('admin'))
               <li class="nav-header">SISTEM</li>
               <li class="nav-item" >
-                  <a href="{{route('setting')}}" class="nav-link {{ request()->is('admin/setting*') ? 'active' : '' }}">
+                  <a href="{{route('setting.index')}}" class="nav-link {{ request()->is('admin/setting*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-cogs"></i>
                       <p>
                           Pengaturan
