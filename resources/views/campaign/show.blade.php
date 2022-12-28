@@ -88,7 +88,7 @@
             </div>
 
             <div class="mt-2 mb-4">
-                <a href="{{ route('campaign.cashout', $campaign->id) }}" class="btn btn-success btn-lg btn-block">Cairkan Sekarang</a>
+                <a href="" class="btn btn-success btn-lg btn-block">Cairkan Sekarang</a>
             </div>
 
             <h4 class="font-weight-bold">Donatur ({{ $campaign->donations->where('status', 'confirmed')->count() }})</h4>

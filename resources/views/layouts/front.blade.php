@@ -9,7 +9,8 @@
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
+ <!-- Theme style -->
+ <link rel="stylesheet" href="{{ asset('/AdminLTE/dist/css/adminlte.min.css') }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -193,6 +194,7 @@
         }
     </style>
     @stack('css')
+    @stack('css_vendor')
 
   </head>
   <body  class="bg-light">
@@ -222,7 +224,7 @@
                 </div>
                 <div class="col-lg-2 action" style="white-space: nowrap;">
                     <a href="{{ url('/donation') }}" class="btn btn-sm btn-light py-0 rounded-0">Donasi</a>
-                    <a href="{{ url('/campaign') }}" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana</a>
+                    <a href="{{ url('/campaign')}}" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana</a>
                 </div>
             </div>
         </div>
@@ -285,7 +287,7 @@
                     </p>
                     <p class="mb-1"><i class="fas fa-phone-alt mr-2"></i> {{ $setting->phone }}</p>
                     <p class="mb-1"><i class="fas fa-envelope mr-2"></i> {{ $setting->email }}</p>
-                    <p class="mb-1"><i class="fas fa-globe mr-2"></i> {{ $setting->company_name }}</p>
+                    <a href="#" class="mb-1"><i class="fas fa-globe mr-2"></i> {{ $setting->company_name }}</a>
                 </div>
                 <div class="col-lg-3 text-white-80">
                     <h5 class="mb-lg-4 mb-2">Mari Berbagi</h5>
@@ -325,12 +327,19 @@
         integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous">
     </script>
 
-    @stack('scripts_vendor')    
+@stack('scripts_vendor')    
 
-    <!-- AdminLTE App -->
-    <script src="{{ asset('/AdminLTE/dist/js/adminlte.js') }}"></script>
-    <script src="{{ asset('/js/custom.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('/AdminLTE/dist/js/adminlte.js') }}"></script>
+<script src="{{ asset('/js/custom.js') }}"></script>
 
     @stack('scripts')
+
+<script>
+    $('.navbar-toggler').on('click', function () {
+    $(this).removeClass('first-load');
+})
+</script>
+   
 </body>
 </html>

@@ -6,6 +6,8 @@ $('.custom-file-input').on('change', function () {
         .html(filename);
 });
 
+
+
 $('[data-toggle="tooltip"]').tooltip()
 
 $.ajaxSetup({
@@ -145,3 +147,4 @@ function format_uang(input) {
 
     input.value = c;
 }
+

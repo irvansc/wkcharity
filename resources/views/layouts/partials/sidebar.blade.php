@@ -28,7 +28,7 @@
               <!-- Add icons to the links using the .nav-icon class
               with font-awesome or any other icon font library -->
               <li class="nav-item">
-                  <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}">
+                  <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('admin/dashboard*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-tachometer-alt"></i>
                       <p>
                           Dashboard
@@ -38,7 +38,7 @@
               @if (auth()->user()->hasRole('admin'))
               <li class="nav-header">MASTER</li>
               <li class="nav-item">
-                  <a href="{{ route('category.index') }}" class="nav-link {{ request()->is('category*') ? 'active' : '' }}">
+                  <a href="{{ route('category.index') }}" class="nav-link {{ request()->is('admin/category*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-cube"></i>
                       <p>
                           Kategori
@@ -117,7 +117,7 @@
               @if (auth()->user()->hasRole('admin'))
               <li class="nav-header">SISTEM</li>
               <li class="nav-item" >
-                  <a href="{{route('setting')}}" class="nav-link {{ request()->is('setting*') ? 'active' : '' }}">
+                  <a href="{{route('setting')}}" class="nav-link {{ request()->is('admin/setting*') ? 'active' : '' }}">
                       <i class="nav-icon fas fa-cogs"></i>
                       <p>
                           Pengaturan

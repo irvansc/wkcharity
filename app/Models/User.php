@@ -21,12 +21,12 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var string[]
+     * @var array
      */
     protected $guarded = ['id'];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidden for arrays.
      *
      * @var array
      */
@@ -38,7 +38,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
@@ -65,14 +65,34 @@ class User extends Authenticatable
         return $this->role->name == $role;
     }
 
-    public function campaigns()
-    {
-        return $this->hasMany(Campaign::class, 'user_id', 'id');
-    }
     public function bank_user()
     {
         return $this->belongsToMany(Bank::class, 'bank_user', 'user_id')
             ->withPivot('account', 'name')
             ->withTimestamps();
+    }
+
+    // public function mainAccount()
+    // {
+    //     return $this->bank_user()
+    //         ->where('is_main', 1)
+    //         ->first();
+    // }
+
+    public function scopeDonatur($query)
+    {
+        return $query->whereHas('role', function ($query) {
+            $query->where('name', 'donatur');
+        });
+    }
+
+    public function campaigns()
+    {
+        return $this->hasMany(Campaign::class, 'user_id', 'id');
+    }
+
+    public function donations()
+    {
+        return $this->hasMany(Donation::class, 'user_id', 'id');
     }
 }
