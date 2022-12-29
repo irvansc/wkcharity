@@ -15,11 +15,14 @@ class DonationController extends Controller
         return view('donation.index');
     }
 
-    public function data()
+    public function data(Request $request)
     {
         $query = Donation::with('campaign','user', 'payment')
             ->when(auth()->user()->hasRole('donatur'), function ($query) {
                 $query->donatur();
+            })
+            ->when($request->has('status') && $request->status != "", function ($query) use ($request) {
+                $query->where('status', $request->status);
             })
             ->orderBy('created_at');
 
@@ -41,10 +44,22 @@ class DonationController extends Controller
                 return tanggal_indonesia($query->created_at);
             })
             ->addColumn('action', function ($query) {
-                return '
+                $action = '';
+                if ($query->user_id == auth()->id()) {
+                    $action .= '<a href="'. url('/donation/'. $query->campaign->id .'/payment-confirmation/'. $query->order_number) .'" class="btn btn-link text-primary"><i class="fas fa-hand-holding-usd"></i></a>';
+                }
+
+                $action .= '
                     <a href="'. route('donation.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
-                    <button class="btn btn-link text-danger" onclick="deleteData(`'. route('donation.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
                 ';
+
+                if ($query->status != 'confirmed') {
+                    $action .= '
+                        <button class="btn btn-link text-danger" onclick="deleteData(`'. route('donation.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
+                    ';
+                }
+
+                return $action;
             })
             ->escapeColumns([])
             ->make(true);
@@ -76,7 +91,20 @@ class DonationController extends Controller
             'status' => $request->status
         ]);
 
-        return response()->json(['data' => $donation, 'message' => 'Donasi berhasil dibatalkan']);
+        $donation->campaign->update([
+            'nominal' => $donation->campaign->nominal + $donation->nominal
+        ]);
+
+        $statusText = "";
+        if ($request->status == 'confirmed') {
+            $statusText = 'dikonfirmasi';
+        } elseif ($request->status == 'canceled') {
+            $statusText = 'dibatalkan';
+        }
+
+        // Mail::to($donation->user)->send(new PaymentConfirmed($donation));
+
+        return response()->json(['data' => $donation, 'message' => 'Donasi berhasil '. $statusText]);
     }
 
     public function destroy($id)

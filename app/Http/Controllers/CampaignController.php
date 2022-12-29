@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
+use App\Models\Cashout;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+
 class CampaignController extends Controller
 {
     /**
@@ -26,58 +28,58 @@ class CampaignController extends Controller
         $query = Campaign::when(auth()->user()->hasRole('donatur'), function ($query) {
             $query->donatur();
         })
-        ->when($request->has('status') && $request->status != "", function ($query) use ($request) {
-            $query->where('status', $request->status);
-        })
-        ->when(
-            $request->has('start_date') && 
-            $request->start_date != "" && 
-            $request->has('end_date') && 
-            $request->end_date != "", 
-            function ($query) use ($request) {
-                $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
-            }
-        )
-        ->orderBy('publish_date', 'desc');
+            ->when($request->has('status') && $request->status != "", function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->when(
+                $request->has('start_date') &&
+                    $request->start_date != "" &&
+                    $request->has('end_date') &&
+                    $request->end_date != "",
+                function ($query) use ($request) {
+                    $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
+                }
+            )
+            ->orderBy('publish_date', 'desc');
 
-    return datatables($query)
-        ->addIndexColumn()
-        ->editColumn('short_description', function ($query) {
-            return $query->title .'<br><small>'. $query->short_description .'</small>';
-        })
-        ->editColumn('path_image', function ($query) {
-            return '<img src="'. asset('/storage').$query->path_image .'" class="img-thumbnail">';
-        })
-        ->editColumn('status', function ($query) {
-            return '<span class="badge badge-'. $query->statusColor() .'">'. $query->status .'</span>';
-        })
-        ->addColumn('author', function ($query) {
-            return $query->user->name;
-        })
-        ->addColumn('action', function ($query) {
-            $text = '
-                <a href="'. route('campaign.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+        return datatables($query)
+            ->addIndexColumn()
+            ->editColumn('short_description', function ($query) {
+                return $query->title . '<br><small>' . $query->short_description . '</small>';
+            })
+            ->editColumn('path_image', function ($query) {
+                return '<img src="' . asset('/storage') . $query->path_image . '" class="img-thumbnail">';
+            })
+            ->editColumn('status', function ($query) {
+                return '<span class="badge badge-' . $query->statusColor() . '">' . $query->status . '</span>';
+            })
+            ->addColumn('author', function ($query) {
+                return $query->user->name;
+            })
+            ->addColumn('action', function ($query) {
+                $text = '
+                <a href="' . route('campaign.show', $query->id) . '" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
             ';
 
-            if (auth()->user()->hasRole('donatur')) {
-                $text .= '
-                <a href="'. route('campaign.edit', $query->id) .'" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></a>
+                if (auth()->user()->hasRole('donatur')) {
+                    $text .= '
+                    <a href="'. url('/campaign/'. $query->id .'/edit') .'" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></a>
                 ';
-            } else {
-                $text .= '
-                    <button onclick="editForm(`'. route('campaign.show', $query->id) .'`)" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></button>
+                } else {
+                    $text .= '
+                    <button onclick="editForm(`' . route('campaign.show', $query->id) . '`)" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></button>
                 ';
-            }
+                }
 
-            $text .= '
-                <button class="btn btn-link text-danger" onclick="deleteData(`'. route('campaign.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
+                $text .= '
+                <button class="btn btn-link text-danger" onclick="deleteData(`' . route('campaign.destroy', $query->id) . '`)"><i class="fas fa-trash-alt"></i></button>
             ';
 
-            return $text;
-        })
-        ->rawColumns(['short_description', 'path_image', 'status', 'action'])
-        ->escapeColumns([])
-        ->make(true);
+                return $text;
+            })
+            ->rawColumns(['short_description', 'path_image', 'status', 'action'])
+            ->escapeColumns([])
+            ->make(true);
     }
 
 
@@ -133,7 +135,7 @@ class CampaignController extends Controller
      * @param  \App\Models\Campaign  $campaign
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request,Campaign $campaign)
+    public function show(Request $request, Campaign $campaign)
     {
 
         $campaign = $campaign->load('donations');
@@ -142,7 +144,7 @@ class CampaignController extends Controller
             abort(404);
         }
 
-        if (! $request->ajax()) {
+        if (!$request->ajax()) {
             return view('campaign.show', compact('campaign'));
         }
 
@@ -150,7 +152,7 @@ class CampaignController extends Controller
         $campaign->end_date = date('Y-m-d H:i', strtotime($campaign->end_date));
         $campaign->goal = format_uang($campaign->goal);
         $campaign->categories = $campaign->category_campaign;
-        $campaign->path_image = asset('/storage'). $campaign->path_image;
+        $campaign->path_image = Storage::disk('public')->url($campaign->path_image);
 
         return response()->json(['data' => $campaign]);
     }
@@ -229,7 +231,7 @@ class CampaignController extends Controller
             $statusText = 'diarsipkan';
         }
 
-        return response()->json(['data' => $campaign, 'message' => 'Projek berhasil '. $statusText]);
+        return response()->json(['data' => $campaign, 'message' => 'Projek berhasil ' . $statusText]);
     }
     /**
      * Remove the specified resource from storage.
@@ -239,7 +241,7 @@ class CampaignController extends Controller
      */
     public function destroy(Campaign $campaign)
     {
-        
+
         if (Storage::disk('public')->exists($campaign->path_image)) {
             Storage::disk('public')->delete($campaign->path_image);
         }
@@ -255,7 +257,7 @@ class CampaignController extends Controller
         if ($campaign->user_id != auth()->id()) {
             abort(404);
         }
-
+        // dd($campaign);
         return view('campaign.cashout', compact('campaign'));
     }
 

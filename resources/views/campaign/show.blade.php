@@ -2,14 +2,14 @@
 
 @section('title', 'Projek')
 @section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item"><a href="{{ route('campaign.index') }}">Projek</a></li>
-    <li class="breadcrumb-item active">Detail</li>
+@parent
+<li class="breadcrumb-item"><a href="{{ route('campaign.index') }}">Projek</a></li>
+<li class="breadcrumb-item active">Detail</li>
 @endsection
 
 @push('css')
 <style>
-    .daftar-donasi.nav-pills .nav-link.active, 
+    .daftar-donasi.nav-pills .nav-link.active,
     .daftar-donasi.nav-pills .show>.nav-link {
         background: transparent;
         color: var(--dark);
@@ -27,7 +27,8 @@
                 <h3>{{ $campaign->title }}</h3>
                 <p class="font-weight-bold mb-0">
                     Diposting oleh <span class="text-primary">{{ $campaign->user->name }}</span>
-                    <small class="d-block">{{ tanggal_indonesia($campaign->publish_date) }} {{ date('H:i', strtotime($campaign->publish_date)) }}</small>
+                    <small class="d-block">{{ tanggal_indonesia($campaign->publish_date) }} {{ date('H:i',
+                        strtotime($campaign->publish_date)) }}</small>
                 </p>
             </x-slot>
 
@@ -46,7 +47,8 @@
             @elseif ($campaign->status == 'archived' && auth()->user()->hasRole('admin'))
             <x-slot name="footer">
                 <button class="btn btn-success float-right"
-                    onclick="editForm('{{ route('campaign.update_status', $campaign->id) }}', 'publish', 'Yakin ingin membuka arsip projek terpilih?', 'success')">Buka Arsip</button>
+                    onclick="editForm('{{ route('campaign.update_status', $campaign->id) }}', 'publish', 'Yakin ingin membuka arsip projek terpilih?', 'success')">Buka
+                    Arsip</button>
             </x-slot>
             @endif
         </x-card>
@@ -76,7 +78,10 @@
             <h1 class="font-weight-bold">Rp. {{ format_uang($campaign->nominal) }}</h1>
             <p class="font-weight-bold">Terkumpul dari Rp. {{ format_uang($campaign->goal) }}</p>
             <div class="progress" style="height: .3rem;">
-                <div class="progress-bar" role="progressbar" style="width: {{ $campaign->nominal / $campaign->goal * 100 }}%" aria-valuenow="{{ $campaign->nominal / $campaign->goal * 100 }}" aria-valuemin="0" aria-valuemax="{{ 100 }}"></div>
+                <div class="progress-bar" role="progressbar"
+                    style="width: {{ $campaign->nominal / $campaign->goal * 100 }}%"
+                    aria-valuenow="{{ $campaign->nominal / $campaign->goal * 100 }}" aria-valuemin="0"
+                    aria-valuemax="{{ 100 }}"></div>
             </div>
             <div class="d-flex justify-content-between mt-1">
                 <p>{{ $campaign->nominal / $campaign->goal * 100 }}% tercapai</p>
@@ -88,25 +93,27 @@
             </div>
 
             <div class="mt-2 mb-4">
-                <a href="" class="btn btn-success btn-lg btn-block">Cairkan Sekarang</a>
+                <a href="{{route('campaign.cashout', $campaign->id)}}" class="btn btn-success btn-lg btn-block">Cairkan Sekarang</a>
             </div>
 
-            <h4 class="font-weight-bold">Donatur ({{ $campaign->donations->where('status', 'confirmed')->count() }})</h4>
+            <h4 class="font-weight-bold">Donatur ({{ $campaign->donations->where('status', 'confirmed')->count() }})
+            </h4>
             <ul class="nav nav-pills mb-3 daftar-donasi" id="pills-tab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="pills-waktu-tab" data-toggle="pill" href="#pills-waktu"
-                        role="tab" aria-controls="pills-waktu" aria-selected="true">Waktu</a>
+                    <a class="nav-link active" id="pills-waktu-tab" data-toggle="pill" href="#pills-waktu" role="tab"
+                        aria-controls="pills-waktu" aria-selected="true">Waktu</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="pills-jumlah-tab" data-toggle="pill" href="#pills-jumlah"
-                        role="tab" aria-controls="pills-jumlah" aria-selected="false">Jumlah</a>
+                    <a class="nav-link" id="pills-jumlah-tab" data-toggle="pill" href="#pills-jumlah" role="tab"
+                        aria-controls="pills-jumlah" aria-selected="false">Jumlah</a>
                 </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-waktu" role="tabpanel"
                     aria-labelledby="pills-waktu-tab">
-                    @forelse ($campaign->donations->where('status', 'confirmed')->sortBy('created_at')->load('user') as $key => $item)
-                    <div @if ($key > 0) class="mt-1" @endif>
+                    @forelse ($campaign->donations->where('status', 'confirmed')->sortBy('created_at')->load('user') as
+                    $key => $item)
+                    <div @if ($key> 0) class="mt-1" @endif>
                         <p class="font-weight-bold mb-0">{{ $item->user->name }}</p>
                         <p class="font-weight-bold mb-0">Rp. {{ format_uang($item->nominal) }}</p>
                         <p class="text-muted mb-0">{{ tanggal_indonesia($item->created_at) }}</p>
@@ -115,10 +122,10 @@
                     <p class="text-muted mb-0">Belum tersedia</p>
                     @endforelse
                 </div>
-                <div class="tab-pane fade" id="pills-jumlah" role="tabpanel"
-                    aria-labelledby="pills-jumlah-tab">
-                    @forelse ($campaign->donations->where('status', 'confirmed')->sortBy('nominal')->load('user') as $key => $item)
-                    <div @if ($key > 0) class="mt-1" @endif>
+                <div class="tab-pane fade" id="pills-jumlah" role="tabpanel" aria-labelledby="pills-jumlah-tab">
+                    @forelse ($campaign->donations->where('status', 'confirmed')->sortBy('nominal')->load('user') as
+                    $key => $item)
+                    <div @if ($key> 0) class="mt-1" @endif>
                         <p class="font-weight-bold mb-0">{{ $item->user->name }}</p>
                         <p class="font-weight-bold mb-0">Rp. {{ format_uang($item->nominal) }}</p>
                         <p class="text-muted mb-0">{{ tanggal_indonesia($item->created_at) }}</p>
@@ -155,11 +162,11 @@
 @push('scripts')
 <script>
     let modal = '#modal-form';
-    
+
     function editForm(url, status, message, color) {
         $(modal).modal('show');
         $(`${modal} form`).attr('action', url);
-        
+
         $(`${modal} [name=status]`).val(status);
         $(`${modal} .text-message`).text(message);
         $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`)

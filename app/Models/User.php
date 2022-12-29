@@ -72,12 +72,12 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    // public function mainAccount()
-    // {
-    //     return $this->bank_user()
-    //         ->where('is_main', 1)
-    //         ->first();
-    // }
+    public function mainAccount()
+    {
+        return $this->bank_user()
+            ->where('is_main', 1)
+            ->first();
+    }
 
     public function scopeDonatur($query)
     {

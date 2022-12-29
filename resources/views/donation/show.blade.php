@@ -2,20 +2,21 @@
 
 @section('title', 'Donasi')
 @section('breadcrumb')
-    @parent
-    <li class="breadcrumb-item"><a href="{{ route('donation.index') }}">Donasi</a></li>
-    <li class="breadcrumb-item active">Detail</li>
+@parent
+<li class="breadcrumb-item"><a href="{{ route('donation.index') }}">Donasi</a></li>
+<li class="breadcrumb-item active">Detail</li>
 @endsection
 
 @push('css')
 <style>
-    .daftar-donasi.nav-pills .nav-link.active, 
+    .daftar-donasi.nav-pills .nav-link.active,
     .daftar-donasi.nav-pills .show>.nav-link {
         background: transparent;
         color: var(--dark);
         border-bottom: 3px solid var(--blue);
         border-radius: 0;
     }
+
 </style>
 @endpush
 
@@ -27,7 +28,8 @@
                 <h3>{{ $donation->campaign->title }}</h3>
                 <p class="font-weight-bold mb-0">
                     Diposting oleh <span class="text-primary">{{ $donation->campaign->user->name }}</span>
-                    <small class="d-block">{{ tanggal_indonesia($donation->campaign->publish_date) }} {{ date('H:i', strtotime($donation->campaign->publish_date)) }}</small>
+                    <small class="d-block">{{ tanggal_indonesia($donation->campaign->publish_date) }}
+                        {{ date('H:i', strtotime($donation->campaign->publish_date)) }}</small>
                 </p>
             </x-slot>
 
@@ -55,7 +57,9 @@
                     </tr>
                     <tr>
                         <td>Status</td>
-                        <td>: <span class="badge badge-{{ $donation->statusColor() }}">{{ $donation->statusText() }}</span></td>
+                        <td>: <span
+                                class="badge badge-{{ $donation->statusColor() }}">{{ $donation->statusText() }}</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -78,10 +82,12 @@
                     </tr>
                     <tr>
                         <td>Bukti Transfer</td>
-                        <td>: 
-                            <a href="javascript:void(0)" class="badge badge-dark" data-toggle="modal" data-target="#bukti-transaksi">Lihat</a>
-                            @if (asset('/storage').$donation->payment->path_image != null)
-                            <a href="{{ asset('/storage').$donation->payment->path_image }}" class="badge badge-success ml-1" download="">Download</a>
+                        <td>:
+                            <a href="javascript:void(0)" class="badge badge-dark" data-toggle="modal"
+                                data-target="#bukti-transaksi">Lihat</a>
+                            @if (Storage::disk('public')->exists($donation->payment->path_image))
+                            <a href="{{ Storage::disk('public')->url($donation->payment->path_image) }}"
+                                class="badge badge-success ml-1" download="">Download</a>
                             @endif
                         </td>
                     </tr>
@@ -124,7 +130,7 @@
                 <h5 class="card-title">Gambar Unggulan</h5>
             </x-slot>
 
-            <img src="{{ asset('/storage').$donation->campaign->path_image }}" class="img-thumbnail">
+            <img src="{{ Storage::disk('public')->url($donation->campaign->path_image) }}" class="img-thumbnail">
         </x-card>
     </div>
 </div>
@@ -150,16 +156,17 @@
 <x-modal size="modal-lg" id="bukti-transaksi">
     <x-slot name="title">Bukti Transaksi</x-slot>
 
-    @if (asset('/storage').$donation->payment->path_image != null)
-    <img src="{{ asset('/storage').$donation->payment->path_image}}" alt="{{ $donation->payment->path_image }}"
-        class="img-thumbnail">
+    @if (Storage::disk('public')->exists($donation->payment->path_image))
+    <img src="{{ Storage::disk('public')->url($donation->payment->path_image) }}"
+        alt="{{ $donation->payment->path_image }}" class="img-thumbnail">
     @else
     Tidak tersedia
     @endif
 
-    @if (asset('/storage').$donation->payment->path_image != null)
+    @if (Storage::disk('public')->exists($donation->payment->path_image))
     <x-slot name="footer">
-        <a href="{{ asset('/storage').$donation->payment->path_image }}" class="btn btn-success" download=""><i class="fas fa-download"></i></a>
+        <a href="{{ Storage::disk('public')->url($donation->payment->path_image) }}" class="btn btn-success"
+            download=""><i class="fas fa-download"></i></a>
     </x-slot>
     @endif
 </x-modal>
@@ -176,7 +183,7 @@
         $(`${modal} [name=_method]`).val('put');
 
         resetForm(`${modal} form`);
-        
+
         $(`${modal} [name=status]`).val(status);
         $(`${modal} .text-message`).html(message);
         $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`);
@@ -196,7 +203,7 @@
                 showAlert(response.message, 'success');
 
                 let color = '';
-                
+
                 if (response.data.status == 'confirmed') color = 'success';
                 else if (response.data.status == 'canceled') color = 'danger';
 
@@ -212,5 +219,6 @@
                 showAlert(errors.responseJSON.message, 'danger');
             });
     }
+
 </script>
 @endpush

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentSuccess;
 use App\Models\Bank;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,27 +20,27 @@ class PaymentController extends Controller
         $campaign = Campaign::findOrFail($id);
         $donation = Donation::where('order_number', $order_number)->first();
         $bank = Bank::all();
-        
-        if (! $donation) {
+
+        if (!$donation) {
             abort(404);
         }
 
         return view('front.donation.payment', compact('campaign', 'donation', 'bank'));
     }
 
-    public function PaymentConfirmation($id, $order_number)
+    public function paymentConfirmation($id, $order_number)
     {
         $campaign = Campaign::findOrFail($id);
         $donation = Donation::where('order_number', $order_number)->first();
         $payment  = Payment::where('order_number', $order_number)->first() ?? new Payment();
         $bank = Bank::all()->pluck('name', 'id');
-        // $mainAccount = $donation->user->mainAccount() ?? new Bank();
+        $mainAccount = $donation->user->mainAccount() ?? new Bank();
 
-        if (! $donation ) {
+        if (!$donation || $donation->user_id != auth()->id()) {
             abort(404);
         }
 
-        return view('front.donation.payment_confirmation', compact('campaign', 'donation', 'bank' ,'payment'));
+        return view('front.donation.payment_confirmation', compact('campaign', 'donation', 'payment', 'bank', 'mainAccount'));
     }
 
     public function store(Request $request, $id, $order_number)
@@ -63,7 +65,7 @@ class PaymentController extends Controller
 
         $campaign = Campaign::findOrFail($id);
         $donation = Donation::where('order_number', $order_number)->first();
-        if (! $donation) {
+        if (!$donation) {
             abort(404);
         }
 
@@ -79,7 +81,7 @@ class PaymentController extends Controller
         $data['user_id'] = $donation->user_id;
         $data['order_number'] = $donation->order_number;
         $data['nominal'] = str_replace('.', '', $request->nominal);
-        
+
         if ($request->has('path_image')) {
             if (Storage::disk('public')->exists($payment->path_image)) {
                 Storage::disk('public')->delete($payment->path_image);
@@ -93,7 +95,7 @@ class PaymentController extends Controller
             $data
         );
 
-        // Mail::to($donation->user)->send(new PaymentSuccess($donation));
+        Mail::to($donation->user)->send(new PaymentSuccess($donation));
 
         return back()
             ->with([

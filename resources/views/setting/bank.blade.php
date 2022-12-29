@@ -23,7 +23,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="account">Nomor Rekening</label>
-                    <input type="text" class="form-control @error('account') is-invalid @enderror" name="account" id="account" 
+                    <input type="text" class="form-control @error('account') is-invalid @enderror" name="account" id="account"
                         value="{{ old('account') }}">
                     @error('account')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -33,7 +33,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="name">Nama</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" 
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name"
                         value="{{ old('name') }}">
                     @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -66,7 +66,7 @@
     <x-slot name="header">
         <h5 class="card-title">Daftar Bank</h5>
     </x-slot>
-    
+
     <x-table>
         <x-slot name="thead">
             <th width="5%">No</th>

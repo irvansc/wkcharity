@@ -4,6 +4,7 @@ use App\Http\Controllers\{
     DashboardController,
     CategoryController,
     CampaignController,
+    CashoutController,
     ContactController,
     DonationController,
     DonaturController,
@@ -32,7 +33,7 @@ Route::post('/contact', [FrontContactController::class, 'store']);
 Route::get('/about', [AboutController::class, 'index']);
 Route::get('/donation', [FrontDonationController::class, 'index']);
 Route::post('/subscriber', [FrontSubscriberController::class, 'store']);
-Route::resource('/campaign', FrontCampaignController::class)->only('index','create','edit');
+Route::resource('/campaign', FrontCampaignController::class)->only('index', 'create', 'edit');
 
 Route::group([
     'middleware' => ['auth', 'role:admin,donatur'],
@@ -59,7 +60,7 @@ Route::group([
     Route::get('/user/profile', [UserProfileInformationController::class, 'show'])
         ->name('profile.show');
     Route::delete('/user/bank/{id}', [UserProfileInformationController::class, 'bankDestroy'])
-    ->name('profile.bank.destroy');
+        ->name('profile.bank.destroy');
 
     Route::group([
         'middleware' => 'role:admin'
@@ -67,28 +68,36 @@ Route::group([
         Route::resource('/category', CategoryController::class);
 
         Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])
-        ->name('campaign.update_status');
+            ->name('campaign.update_status');
 
         Route::get('/setting', [SettingController::class, 'index'])
-        ->name('setting.index');
-        
+            ->name('setting.index');
+
         Route::put('/setting/{setting}', [SettingController::class, 'update'])
-        ->name('setting.update');
-        
+            ->name('setting.update');
+
         Route::delete('/setting/{setting}/bank/{id}', [SettingController::class, 'bankDestroy'])
-        ->name('setting.bank.destroy');
-   
+            ->name('setting.bank.destroy');
     });
 
     Route::get('/campaign/data', [CampaignController::class, 'data'])
-    ->name('campaign.data');
+        ->name('campaign.data');
     Route::resource('/campaign', CampaignController::class);
     Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])
-    ->name('campaign.update_status');
+        ->name('campaign.update_status');
+
+    Route::get('/campaign/{id}/cashout', [CampaignController::class, 'cashout'])
+        ->name('campaign.cashout');
+    Route::post('/campaign/{id}/cashout', [CampaignController::class, 'cashoutStore'])
+        ->name('campaign.cashout.store');
+
+    Route::get('/cashout/data', [CashoutController::class, 'data'])
+        ->name('cashout.data');
+    Route::resource('/cashout', CashoutController::class);
 
     Route::get('/donation/data', [DonationController::class, 'data'])->name('donation.data');
     Route::resource('/donation', DonationController::class);
-    
+
     Route::get('/contact/data', [ContactController::class, 'data'])->name('contact.data');
     Route::resource('/contact', ContactController::class)->only('index', 'destroy');
 
@@ -96,14 +105,15 @@ Route::group([
         'middleware' => 'role:admin'
     ], function () {
 
-    Route::get('/donatur/data', [DonaturController::class, 'data'])->name('donatur.data');
-    Route::resource('/donatur', DonaturController::class);
+        Route::get('/donatur/data', [DonaturController::class, 'data'])->name('donatur.data');
+        Route::resource('/donatur', DonaturController::class);
 
-    Route::get('/subscriber/data', [SubscriberController::class, 'data'])->name('subscriber.data');
-    Route::resource('/subscriber', SubscriberController::class)->only('index', 'destroy');
+        Route::get('/subscriber/data', [SubscriberController::class, 'data'])->name('subscriber.data');
+        Route::resource('/subscriber', SubscriberController::class)->only('index', 'destroy');
 
-    Route::get('/report/data', [ReportController::class, 'data'])->name('report.data');
-    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
-    
+        Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+        Route::get('/report/data/{start}/{end}', [ReportController::class, 'data'])->name('report.data');
+        Route::get('/report/pdf/{start}/{end}', [ReportController::class, 'exportPDF'])->name('report.export_pdf');
+        Route::get('/report/excel/{start}/{end}', [ReportController::class, 'exportExcel'])->name('report.export_excel');
     });
 });
