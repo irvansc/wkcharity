@@ -117,3 +117,4 @@ Route::group([
         Route::get('/report/excel/{start}/{end}', [ReportController::class, 'exportExcel'])->name('report.export_excel');
     });
 });
+Route::get('/user/{id}/{token}', [UserProfileInformationController::class, 'email_verification']);
